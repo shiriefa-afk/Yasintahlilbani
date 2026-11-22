@@ -1,0 +1,8 @@
+{
+  "name": "Remix Yasin \u0026 Tahlil",
+  "description": "Aplikasi Surat Yasin, Buku Tahlil \u0026 Doa Arwah, Surah Pendek, Tasbih Digital, dan Daftar Nama Arwah.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

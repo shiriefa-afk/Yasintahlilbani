@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yasin &amp; Tahlil Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Fraunces:wght@600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #FAF6EE;
+      --surface: #FFFDF8;
+      --surface-alt: #F1E9D8;
+      --primary: #0D5C46;
+      --primary-container: #D3ECE2;
+      --gold: #B5892E;
+      --gold-container: #F6E8C6;
+      --text: #1A2420;
+      --muted: #53615B;
+      --border: #D6CCB6;
+      --danger: #B3261E;
+      --arabic-size: 28px;
+    }
+
+    body.dark-theme {
+      --bg: #0B1713;
+      --surface: #13241E;
+      --surface-alt: #1B3129;
+      --primary: #59C49F;
+      --primary-container: #134535;
+      --gold: #E2BE67;
+      --gold-container: #473711;
+      --text: #EDE6D6;
+      --muted: #AEC0B8;
+      --border: #31493F;
+      --danger: #F2B8B5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 84px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      font-family: "Fraunces", Georgia, serif;
+    }
+
+    p { margin: 0; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+    }
+
+    .topbar-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      display: block;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .hero-card {
+      border-radius: 22px;
+      padding: 22px;
+      color: #fff;
+      background: linear-gradient(120deg, #062C21, #0D5C46);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .hero-pill {
+      display: inline-block;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(246, 232, 198, 0.2);
+      color: #F6E8C6;
+      margin-bottom: 8px;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    .hero-arabic {
+      font-family: "Amiri", serif;
+      font-size: 28px;
+      color: #F6E8C6;
+      white-space: nowrap;
+    }
+
+    .mushaf-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--gold);
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .mushaf-divider::before,
+    .mushaf-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .feature-card {
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: inherit;
+      font: inherit;
+    }
+
+    .feature-card:hover { border-color: var(--primary); }
+    .feature-icon { font-size: 24px; }
+    .feature-card small { color: var(--muted); font-size: 13px; }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .muted { color: var(--muted); font-size: 13px; }
+
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .chip-row.center { justify-content: center; flex-wrap: wrap; }
+
+    .chip, .btn-chip {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .chip.active, .btn-chip.active {
+      background: var(--primary-container);
+      border-color: var(--primary);
+      color: var(--text);
+    }
+
+    .btn-primary, .btn-gold, .btn-outline, .btn-text, .btn-icon {
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    body.dark-theme .btn-primary { color: #073E2F; }
+
+    .btn-gold {
+      background: #E2BE67;
+      color: #2B2004;
+    }
+
+    .btn-outline {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-text {
+      background: transparent;
+      color: var(--primary);
+      padding: 6px 10px;
+    }
+
+    .btn-text.danger { color: var(--danger); }
+
+    .btn-icon {
+      background: var(--surface-alt);
+      color: var(--text);
+      padding: 6px 12px;
+      font-size: 16px;
+    }
+
+    .btn-icon.bookmarked {
+      background: var(--gold-container);
+      color: var(--gold);
+    }
+
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .flex-1 { flex: 1; }
+
+    .bismillah-card {
+      text-align: center;
+      background: var(--primary-container);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .surah-title-ar {
+      font-family: "Amiri", serif;
+      font-size: 30px;
+      color: var(--primary);
+    }
+
+    .verse-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .verse-card.last-read { border: 1.5px solid var(--primary); }
+    .verse-card.bookmarked { border-color: var(--gold); }
+
+    .verse-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .verse-num-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .verse-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .medallion {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1.5px solid var(--gold);
+      background: var(--gold-container);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .medallion.small { width: 30px; height: 30px; font-size: 12px; }
+
+    .badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .badge-primary { background: var(--primary-container); color: var(--primary); }
+    .badge-gold { background: var(--gold-container); color: var(--text); }
+
+    .arabic-text {
+      font-family: "Amiri", serif;
+      font-size: var(--arabic-size);
+      line-height: 1.95;
+      text-align: right;
+      margin-bottom: 10px;
+    }
+
+    .arabic-text.center, .latin-text.center, .translation-text.center { text-align: center; }
+
+    .arabic-sub {
+      font-family: "Amiri", serif;
+      font-size: 15px;
+      color: var(--primary);
+    }
+
+    .latin-text {
+      font-style: italic;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .translation-text {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .guidance-note {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .arwah-inline-box {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--gold-container);
+      border: 1px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .arwah-prayer-list, .arwah-preview-list {
+      margin: 0;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .progress-track {
+      height: 6px;
+      border-radius: 999px;
+      background: var(--surface-alt);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.25s ease;
+    }
+
+    .step-counter-row, .step-nav-bar, .card-head-row, .card-foot-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-counter-row { margin-top: 12px; }
+    .card-foot-row { margin-top: 10px; }
+
+    .tasbih-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0;
+    }
+
+    .tasbih-ring-btn {
+      position: relative;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .tasbih-ring-btn:active { transform: scale(0.98); }
+
+    .tasbih-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: var(--surface-alt);
+      stroke-width: 12;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 12;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.2s ease;
+    }
+
+    .tasbih-ring-btn.reached .ring-progress { stroke: var(--gold); }
+
+    .tasbih-inner {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tasbih-count {
+      font-family: "Fraunces", serif;
+      font-size: 46px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .tasbih-target { font-size: 13px; color: var(--muted); }
+    .tasbih-hint { font-size: 12px; font-weight: 600; color: var(--primary); }
+
+    .tasbih-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .text-input, select {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .status-text { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .status-text.on { color: var(--primary); }
+
+    .empty-card { text-align: center; display: flex; flex-direction: column; gap: 8px; padding: 28px; }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 25;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 6px 4px;
+    }
+
+    .nav-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 8px 4px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+      background: var(--primary-container);
+    }
+
+    dialog {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      color: var(--text);
+      max-width: 460px;
+      width: calc(100% - 32px);
+      padding: 20px;
+    }
+
+    dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .toc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 60vh;
+      overflow-y: auto;
+      margin: 12px 0;
+    }
+
+    .toc-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .toc-item.active {
+      border-color: var(--primary);
+      background: var(--primary-container);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text);
+      color: var(--bg);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 40;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--border); border-radius: 999px; transition: 0.2s;
+    }
+    .slider::before {
+      content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background: #fff; border-radius: 50%; transition: 0.2s;
+    }
+    .switch input:checked + .slider { background: var(--primary); }
+    .switch input:checked + .slider::before { transform: translateX(20px); }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div>
+        <span class="brand-eyebrow">Assalamu'alaikum</span>
+        <h1 class="brand-title">Yasin &amp; Tahlil Digital</h1>
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn-outline" id="btn-night-toggle">🌙 Mode Malam</button>
+        <button type="button" class="btn-outline" id="btn-open-settings">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="app-main"></main>
+
+  <nav class="bottom-nav" aria-label="Menu Utama">
+    <button type="button" class="nav-btn active" data-tab="home">🏠<span>Beranda</span></button>
+    <button type="button" class="nav-btn" data-tab="yasin">📖<span>Yasin</span></button>
+    <button type="button" class="nav-btn" data-tab="tahlil">🤲<span>Tahlil</span></button>
+    <button type="button" class="nav-btn" data-tab="tasbih">📿<span>Tasbih</span></button>
+    <button type="button" class="nav-btn" data-tab="arwah">👥<span>Arwah</span></button>
+  </nav>
+
+  <dialog id="settings-modal">
+    <h3>Pengaturan Tampilan Bacaan</h3>
+    <div class="modal-body">
+      <label>
+        <span>Ukuran Teks Arab: <strong id="setting-font-value">28 px</strong></span>
+        <input type="range" id="setting-font-size" min="20" max="40" step="1" style="width:100%" />
+      </label>
+      <label class="toggle-row">
+        <span>Tampilkan Tulisan Latin</span>
+        <input type="checkbox" id="setting-show-latin" />
+      </label>
+      <label class="toggle-row">
+        <span>Tampilkan Terjemahan</span>
+        <input type="checkbox" id="setting-show-translation" />
+      </label>
+      <label class="toggle-row">
+        <span>Mode Malam</span>
+        <input type="checkbox" id="setting-night-mode" />
+      </label>
+      <label class="toggle-row">
+        <span>Getar Tasbih (Haptik)</span>
+        <input type="checkbox" id="setting-haptic" />
+      </label>
+      <button type="button" class="btn-primary" id="btn-close-settings">Selesai</button>
+    </div>
+  </dialog>
+
+  <dialog id="arwah-modal">
+    <h3 id="arwah-modal-title">Tambah Nama Arwah</h3>
+    <form id="arwah-form" class="modal-body">
+      <label>
+        <span>Sapaan</span>
+        <select id="arwah-honorific">
+          <option value="Almarhum">Almarhum (Bin)</option>
+          <option value="Almarhumah">Almarhumah (Binti)</option>
+        </select>
+      </label>
+      <label>
+        <span>Nama Lengkap*</span>
+        <input type="text" id="arwah-fullname" class="text-input" maxlength="80" placeholder="Contoh: H. Ahmad Sudirman" required />
+      </label>
+      <label>
+        <span>Nama Ayah (Opsional)</span>
+        <input type="text" id="arwah-parent" class="text-input" maxlength="80" placeholder="Contoh: Abdullah" />
+      </label>
+      <label>
+        <span>Catatan / Hubungan (Opsional)</span>
+        <input type="text" id="arwah-note" class="text-input" maxlength="100" placeholder="Contoh: Ayahanda, Haul 12 Rajab" />
+      </label>
+      <div class="btn-group">
+        <button type="button" class="btn-outline flex-1" id="btn-cancel-arwah">Batal</button>
+        <button type="submit" class="btn-primary flex-1">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="toc-modal">
+    <h3>Daftar Isi Bacaan Tahlil</h3>
+    <div id="toc-list" class="toc-list"></div>
+    <button type="button" class="btn-outline" id="btn-close-toc" style="width:100%">Tutup</button>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
