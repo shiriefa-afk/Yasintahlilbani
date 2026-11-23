@@ -154,6 +154,8 @@ fun MainDashboardShell(
   val settings by viewModel.readerSettings.collectAsStateWithLifecycle(initialValue = fallbackSettings)
   val readingState by viewModel.readingState.collectAsStateWithLifecycle()
   val deceasedState by viewModel.deceasedPrayersState.collectAsStateWithLifecycle()
+  val cloudAccount by viewModel.cloudAccount.collectAsStateWithLifecycle()
+  val cloudStatus by viewModel.cloudStatus.collectAsStateWithLifecycle()
   val tasbihUi by viewModel.tasbihUi.collectAsStateWithLifecycle()
   val stepCounts by viewModel.tahlilStepCounts.collectAsStateWithLifecycle()
 
@@ -344,6 +346,11 @@ fun MainDashboardShell(
                 },
                 onToggleIncluded = { entry -> viewModel.toggleDeceasedIncluded(entry) },
                 onDeleteDeceased = { entryId -> viewModel.deleteDeceasedPrayer(entryId) },
+                cloudAccount = cloudAccount,
+                cloudStatus = cloudStatus,
+                onGoogleSignIn = { idToken -> viewModel.signInWithGoogle(idToken) },
+                onSyncCloud = { viewModel.syncCloud() },
+                onSignOutCloud = { viewModel.signOutCloud() },
               )
             }
           }

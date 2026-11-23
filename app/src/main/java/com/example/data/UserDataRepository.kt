@@ -16,10 +16,36 @@ import java.util.UUID
 
 class UserDataRepository(
   private val dao: YasinTahlilDao,
+  private val cloudSync: DeceasedPrayerCloudSync? = null,
 ) {
   constructor(context: Context) : this(
-    YasinTahlilDatabase.getInstance(context).yasinTahlilDao()
+    YasinTahlilDatabase.getInstance(context).yasinTahlilDao(),
+    DeceasedPrayerCloudSync(
+      context,
+      YasinTahlilDatabase.getInstance(context).yasinTahlilDao(),
+    ),
   )
+
+  fun cloudAccountEmail(): String? = cloudSync?.accountEmail()
+
+  suspend fun signInWithGoogle(idToken: String): Result<String> = try {
+    Result.success(requireNotNull(cloudSync) { "Sinkronisasi belum tersedia." }.signInWithGoogle(idToken))
+  } catch (e: CancellationException) {
+    throw e
+  } catch (e: Exception) {
+    Result.failure(e)
+  }
+
+  suspend fun syncCloud(): Result<Unit> = try {
+    requireNotNull(cloudSync) { "Sinkronisasi belum tersedia." }.syncNow()
+    Result.success(Unit)
+  } catch (e: CancellationException) {
+    throw e
+  } catch (e: Exception) {
+    Result.failure(e)
+  }
+
+  fun signOutCloud() = cloudSync?.signOut()
 
   fun observeDeceasedPrayers(): Flow<List<DeceasedPrayer>> {
     return dao.observeDeceasedPrayers().map { entities ->
@@ -57,6 +83,7 @@ class UserDataRepository(
           updatedAtMillis = now,
         )
       )
+      cloudSync?.syncIfSignedIn()
       Result.success(Unit)
     } catch (e: CancellationException) {
       throw e
@@ -96,6 +123,7 @@ class UserDataRepository(
       if (updated == 0) {
         return Result.failure(IllegalStateException("Data arwah tidak ditemukan."))
       }
+      cloudSync?.syncIfSignedIn()
       Result.success(Unit)
     } catch (e: CancellationException) {
       throw e
@@ -115,6 +143,7 @@ class UserDataRepository(
       if (updated == 0) {
         return Result.failure(IllegalStateException("Data arwah tidak ditemukan."))
       }
+      cloudSync?.syncIfSignedIn()
       Result.success(Unit)
     } catch (e: CancellationException) {
       throw e
@@ -127,6 +156,7 @@ class UserDataRepository(
     return try {
       require(entryId.isNotBlank()) { "ID data tidak valid." }
       dao.deleteDeceasedPrayerById(entryId)
+      cloudSync?.deleteEntry(entryId)
       Result.success(Unit)
     } catch (e: CancellationException) {
       throw e

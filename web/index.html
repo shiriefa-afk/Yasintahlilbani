@@ -305,6 +305,23 @@
       gap: 12px;
     }
 
+    .cloud-account-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cloud-account-copy {
+      display: flex;
+      flex: 1;
+      min-width: 180px;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 14px;
+    }
+
     .verse-card.last-read { border: 1.5px solid var(--primary); }
     .verse-card.bookmarked { border-color: var(--gold); }
 
@@ -707,6 +724,7 @@
   </header>
 
   <main class="container" id="app-main"></main>
+  <script type="module" src="./account-sync.js"></script>
 
   <nav class="bottom-nav" aria-label="Menu Utama">
     <button type="button" class="nav-btn active" data-tab="home" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span>Beranda</span></button>

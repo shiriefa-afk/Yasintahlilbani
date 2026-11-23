@@ -48,10 +48,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import com.example.BuildConfig
 import com.example.model.DeceasedPrayer
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import kotlinx.coroutines.launch
 import com.example.model.UiState
 
 @Composable
@@ -77,6 +85,11 @@ fun ArwahListScreen(
   ) -> Unit,
   onToggleIncluded: (DeceasedPrayer) -> Unit,
   onDeleteDeceased: (String) -> Unit,
+  cloudAccount: String,
+  cloudStatus: String,
+  onGoogleSignIn: (String) -> Unit,
+  onSyncCloud: () -> Unit,
+  onSignOutCloud: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var searchQuery by remember { mutableStateOf("") }
@@ -99,6 +112,13 @@ fun ArwahListScreen(
           .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
+        DeceasedPrayerCloudCard(
+          account = cloudAccount,
+          status = cloudStatus,
+          onGoogleSignIn = onGoogleSignIn,
+          onSync = onSyncCloud,
+          onSignOut = onSignOutCloud,
+        )
         Text(
           text = "Daftar Nama Arwah",
           style = MaterialTheme.typography.headlineSmall,
@@ -318,6 +338,76 @@ fun ArwahListScreen(
         }
       },
     )
+  }
+}
+
+@Composable
+private fun DeceasedPrayerCloudCard(
+  account: String,
+  status: String,
+  onGoogleSignIn: (String) -> Unit,
+  onSync: () -> Unit,
+  onSignOut: () -> Unit,
+) {
+  val context = LocalContext.current
+  val scope = rememberCoroutineScope()
+  var localStatus by remember { mutableStateOf("") }
+  Card(
+    modifier = Modifier.fillMaxWidth(),
+    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+  ) {
+    Column(
+      modifier = Modifier.padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      Text("Sinkronisasi antarperangkat", style = MaterialTheme.typography.titleSmall)
+      Text(
+        text = if (account.isBlank()) {
+          "Masuk dengan Google untuk menyimpan daftar arwah di akun Anda dan membukanya di Android maupun web."
+        } else {
+          "Terhubung sebagai $account"
+        },
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSecondaryContainer,
+      )
+      if (account.isBlank()) {
+        Button(
+          onClick = {
+            scope.launch {
+              try {
+                if (BuildConfig.GOOGLE_WEB_CLIENT_ID.isBlank() || BuildConfig.GOOGLE_WEB_CLIENT_ID.startsWith("your-")) {
+                  error("Atur GOOGLE_WEB_CLIENT_ID di konfigurasi aplikasi terlebih dahulu.")
+                }
+                val option = GetGoogleIdOption.Builder()
+                  .setFilterByAuthorizedAccounts(false)
+                  .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                  .build()
+                val request = GetCredentialRequest.Builder()
+                  .addCredentialOption(option)
+                  .build()
+                val result = CredentialManager.create(context).getCredential(context, request)
+                val credential = GoogleIdTokenCredential.createFrom(result.credential.data)
+                onGoogleSignIn(credential.idToken)
+                localStatus = ""
+              } catch (error: Exception) {
+                localStatus = error.localizedMessage ?: "Tidak dapat masuk dengan Google."
+              }
+            }
+          },
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Text("Masuk dengan Google")
+        }
+      } else {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          Button(onClick = onSync, modifier = Modifier.weight(1f)) { Text("Sinkronkan") }
+          TextButton(onClick = onSignOut) { Text("Keluar") }
+        }
+      }
+      (localStatus.ifBlank { status }).takeIf { it.isNotBlank() }?.let {
+        Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSecondaryContainer)
+      }
+    }
   }
 }
 

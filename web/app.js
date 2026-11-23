@@ -52,6 +52,7 @@
   function saveJson(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      if (key === STORAGE_KEYS.arwah) window.YasinCloud?.syncLocalList();
     } catch {
       // Ignore storage quota errors
     }
@@ -472,6 +473,13 @@
       : state.arwah;
 
     el.appMain.innerHTML = `
+      <section class="card cloud-account-card" id="cloud-account-card" aria-label="Sinkronisasi daftar arwah">
+        <div class="cloud-account-copy">
+          <strong>Sinkronisasi antarperangkat</strong>
+          <span>Masuk dengan Google untuk memakai daftar nama yang sama di web dan Android.</span>
+        </div>
+        <button type="button" class="btn-primary" id="btn-cloud-signin">Masuk dengan Google</button>
+      </section>
       <div class="section-header">
         <div>
           <h2>Daftar Nama Arwah</h2>
@@ -773,6 +781,7 @@
     }
 
     if (target.dataset.deleteArwah) {
+      window.YasinCloud?.deleteEntry(target.dataset.deleteArwah);
       state.arwah = state.arwah.filter((a) => a.id !== target.dataset.deleteArwah);
       saveJson(STORAGE_KEYS.arwah, state.arwah);
       showToast("Nama arwah dihapus.");
@@ -786,6 +795,7 @@
       const entry = state.arwah.find((a) => a.id === input.dataset.toggleArwah);
       if (entry) {
         entry.includedInPrayer = input.checked;
+        entry.updatedAtMillis = Date.now();
         saveJson(STORAGE_KEYS.arwah, state.arwah);
         renderArwah();
       }
@@ -854,12 +864,14 @@
     if (state.editingArwahId) {
       const idx = state.arwah.findIndex((a) => a.id === state.editingArwahId);
       if (idx !== -1) {
-        state.arwah[idx] = { ...state.arwah[idx], honorific, fullName, parentPrefix, parentName, relationNote };
+        state.arwah[idx] = { ...state.arwah[idx], honorific, fullName, parentPrefix, parentName, relationNote, updatedAtMillis: Date.now() };
       }
       showToast("Data arwah diperbarui.");
     } else {
       state.arwah.unshift({
-        id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        id: crypto.randomUUID(),
+        createdAtMillis: Date.now(),
+        updatedAtMillis: Date.now(),
         honorific,
         fullName,
         parentPrefix,
@@ -884,6 +896,11 @@
     el.tocModal.close();
     renderTahlil();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  window.addEventListener("arwah-cloud-updated", () => {
+    state.arwah = loadArray(STORAGE_KEYS.arwah);
+    if (state.activeTab === "arwah" || state.activeTab === "tahlil") renderActiveTab();
   });
 
   applyTheme();
