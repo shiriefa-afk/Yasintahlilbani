@@ -44,7 +44,7 @@
       font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      padding-bottom: 84px;
+      padding-bottom: calc(92px + env(safe-area-inset-bottom));
       transition: background 0.2s ease, color 0.2s ease;
     }
 
@@ -139,6 +139,7 @@
       font-size: 28px;
       color: #F6E8C6;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .mushaf-divider {
@@ -180,7 +181,17 @@
     }
 
     .feature-card:hover { border-color: var(--primary); }
-    .feature-icon { font-size: 24px; }
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--primary-container);
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 700;
+    }
     .feature-card small { color: var(--muted); font-size: 13px; }
 
     .section-header {
@@ -292,6 +303,23 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+    }
+
+    .cloud-account-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cloud-account-copy {
+      display: flex;
+      flex: 1;
+      min-width: 180px;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 14px;
     }
 
     .verse-card.last-read { border: 1.5px solid var(--primary); }
@@ -526,28 +554,67 @@
       border-top: 1px solid var(--border);
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      padding: 6px 4px;
+      padding: 6px 8px max(6px, env(safe-area-inset-bottom));
     }
 
     .nav-btn {
+      min-width: 0;
+      min-height: 48px;
       border: none;
       background: transparent;
       color: var(--muted);
       font-family: inherit;
       font-size: 11px;
       font-weight: 600;
-      padding: 8px 4px;
-      border-radius: 10px;
+      padding: 6px 4px;
+      border-radius: 14px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 2px;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      line-height: 1;
     }
 
     .nav-btn.active {
       color: var(--primary);
       background: var(--primary-container);
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 480px) {
+      .topbar { padding: 10px 12px; }
+      .topbar-inner { gap: 8px; }
+      .brand-title { font-size: 16px; }
+      .brand-eyebrow { font-size: 11px; }
+      .topbar .btn-group { flex-wrap: nowrap; gap: 6px; }
+      .topbar .btn-outline { padding: 9px 10px; font-size: 12px; white-space: nowrap; }
+      .container { padding: 12px; gap: 14px; }
+      .hero-card { padding: 18px; }
+      .hero-top { flex-wrap: wrap; }
+      .hero-arabic { width: 100%; text-align: right; font-size: 30px; }
+      .menu-grid { gap: 10px; }
+      .feature-card { min-height: 124px; }
+      .bottom-nav { padding-inline: 6px; }
+      .nav-btn { font-size: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
     }
 
     dialog {
@@ -651,19 +718,20 @@
       </div>
       <div class="btn-group">
         <button type="button" class="btn-outline" id="btn-night-toggle">🌙 Mode Malam</button>
-        <button type="button" class="btn-outline" id="btn-open-settings">⚙️</button>
+        <button type="button" class="btn-outline" id="btn-open-settings" aria-label="Pengaturan tampilan">Aa</button>
       </div>
     </div>
   </header>
 
   <main class="container" id="app-main"></main>
+  <script type="module" src="./account-sync.js"></script>
 
   <nav class="bottom-nav" aria-label="Menu Utama">
-    <button type="button" class="nav-btn active" data-tab="home">🏠<span>Beranda</span></button>
-    <button type="button" class="nav-btn" data-tab="yasin">📖<span>Yasin</span></button>
-    <button type="button" class="nav-btn" data-tab="tahlil">🤲<span>Tahlil</span></button>
-    <button type="button" class="nav-btn" data-tab="tasbih">📿<span>Tasbih</span></button>
-    <button type="button" class="nav-btn" data-tab="arwah">👥<span>Arwah</span></button>
+    <button type="button" class="nav-btn active" data-tab="home" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span>Beranda</span></button>
+    <button type="button" class="nav-btn" data-tab="yasin"><span class="nav-icon" aria-hidden="true">۞</span><span>Yasin</span></button>
+    <button type="button" class="nav-btn" data-tab="tahlil"><span class="nav-icon" aria-hidden="true">✧</span><span>Tahlil</span></button>
+    <button type="button" class="nav-btn" data-tab="tasbih"><span class="nav-icon" aria-hidden="true">◉</span><span>Tasbih</span></button>
+    <button type="button" class="nav-btn" data-tab="arwah"><span class="nav-icon" aria-hidden="true">♙</span><span>Arwah</span></button>
   </nav>
 
   <dialog id="settings-modal">

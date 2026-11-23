@@ -50,6 +50,12 @@ interface YasinTahlilDao {
   @Query("SELECT * FROM deceased_prayers ORDER BY createdAtMillis DESC")
   fun observeDeceasedPrayers(): Flow<List<DeceasedPrayerEntity>>
 
+  @Query("SELECT * FROM deceased_prayers")
+  suspend fun getDeceasedPrayersOnce(): List<DeceasedPrayerEntity>
+
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun upsertDeceasedPrayers(entities: List<DeceasedPrayerEntity>)
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertDeceasedPrayer(entity: DeceasedPrayerEntity)
 

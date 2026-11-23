@@ -39,6 +39,40 @@ class YasinTahlilViewModel(
   private val settingsRepository: ReaderSettingsRepository,
 ) : ViewModel() {
 
+  private val _cloudAccount = MutableStateFlow(userDataRepository.cloudAccountEmail().orEmpty())
+  val cloudAccount: StateFlow<String> = _cloudAccount.asStateFlow()
+  private val _cloudStatus = MutableStateFlow("")
+  val cloudStatus: StateFlow<String> = _cloudStatus.asStateFlow()
+
+  fun signInWithGoogle(idToken: String) {
+    viewModelScope.launch {
+      _cloudStatus.value = "Menghubungkan dan menyinkronkan..."
+      userDataRepository.signInWithGoogle(idToken)
+        .onSuccess { email ->
+          _cloudAccount.value = email
+          _cloudStatus.value = "Daftar nama arwah telah disinkronkan."
+        }
+        .onFailure { error ->
+          _cloudStatus.value = error.localizedMessage ?: "Gagal menghubungkan akun."
+        }
+    }
+  }
+
+  fun syncCloud() {
+    viewModelScope.launch {
+      _cloudStatus.value = "Menyinkronkan daftar..."
+      userDataRepository.syncCloud()
+        .onSuccess { _cloudStatus.value = "Sinkronisasi selesai." }
+        .onFailure { error -> _cloudStatus.value = error.localizedMessage ?: "Sinkronisasi gagal." }
+    }
+  }
+
+  fun signOutCloud() {
+    userDataRepository.signOutCloud()
+    _cloudAccount.value = ""
+    _cloudStatus.value = "Akun dilepas. Salinan lokal tetap tersimpan di perangkat ini."
+  }
+
   val readerSettings: StateFlow<ReaderSettings> = settingsRepository.settingsFlow
     .stateIn(
       scope = viewModelScope,

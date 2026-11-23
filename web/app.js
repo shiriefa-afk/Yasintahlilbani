@@ -52,6 +52,7 @@
   function saveJson(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      if (key === STORAGE_KEYS.arwah) window.YasinCloud?.syncLocalList();
     } catch {
       // Ignore storage quota errors
     }
@@ -115,13 +116,16 @@
   function applyTheme() {
     el.body.classList.toggle("dark-theme", Boolean(state.settings.nightMode));
     document.documentElement.style.setProperty("--arabic-size", `${state.settings.arabicFontSize}px`);
-    el.nightToggleBtn.textContent = state.settings.nightMode ? "☀️ Mode Terang" : "🌙 Mode Malam";
+    el.nightToggleBtn.textContent = state.settings.nightMode ? "Mode Terang" : "Mode Malam";
   }
 
   function setTab(tabName) {
     state.activeTab = tabName;
     document.querySelectorAll("[data-tab]").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.tab === tabName);
+      const isActive = btn.dataset.tab === tabName;
+      btn.classList.toggle("active", isActive);
+      if (isActive) btn.setAttribute("aria-current", "page");
+      else btn.removeAttribute("aria-current");
     });
     renderActiveTab();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -178,22 +182,22 @@
         <h3 class="section-title">Daftar Bacaan & Ibadah</h3>
         <div class="menu-grid">
           <button type="button" class="card feature-card" data-nav="yasin">
-            <span class="feature-icon">📖</span>
+            <span class="feature-icon" aria-hidden="true">Y</span>
             <strong>Surah Yasin</strong>
             <small>83 Ayat Lengkap</small>
           </button>
           <button type="button" class="card feature-card" data-nav="tahlil">
-            <span class="feature-icon">🤲</span>
+            <span class="feature-icon" aria-hidden="true">T</span>
             <strong>Tahlil & Doa Arwah</strong>
             <small>16 Urutan Bacaan</small>
           </button>
           <button type="button" class="card feature-card" data-nav="short">
-            <span class="feature-icon">🕌</span>
+            <span class="feature-icon" aria-hidden="true">Q</span>
             <strong>Surah Pendek</strong>
             <small>Fatihah, Kursi & 3 Qul</small>
           </button>
           <button type="button" class="card feature-card" data-nav="tasbih">
-            <span class="feature-icon">📿</span>
+            <span class="feature-icon" aria-hidden="true">33</span>
             <strong>Tasbih Digital</strong>
             <small>Total: ${state.tasbih.lifetimeCount} dzikir</small>
           </button>
@@ -469,6 +473,13 @@
       : state.arwah;
 
     el.appMain.innerHTML = `
+      <section class="card cloud-account-card" id="cloud-account-card" aria-label="Sinkronisasi daftar arwah">
+        <div class="cloud-account-copy">
+          <strong>Sinkronisasi antarperangkat</strong>
+          <span>Masuk dengan Google untuk memakai daftar nama yang sama di web dan Android.</span>
+        </div>
+        <button type="button" class="btn-primary" id="btn-cloud-signin">Masuk dengan Google</button>
+      </section>
       <div class="section-header">
         <div>
           <h2>Daftar Nama Arwah</h2>
@@ -770,6 +781,7 @@
     }
 
     if (target.dataset.deleteArwah) {
+      window.YasinCloud?.deleteEntry(target.dataset.deleteArwah);
       state.arwah = state.arwah.filter((a) => a.id !== target.dataset.deleteArwah);
       saveJson(STORAGE_KEYS.arwah, state.arwah);
       showToast("Nama arwah dihapus.");
@@ -783,6 +795,7 @@
       const entry = state.arwah.find((a) => a.id === input.dataset.toggleArwah);
       if (entry) {
         entry.includedInPrayer = input.checked;
+        entry.updatedAtMillis = Date.now();
         saveJson(STORAGE_KEYS.arwah, state.arwah);
         renderArwah();
       }
@@ -851,12 +864,14 @@
     if (state.editingArwahId) {
       const idx = state.arwah.findIndex((a) => a.id === state.editingArwahId);
       if (idx !== -1) {
-        state.arwah[idx] = { ...state.arwah[idx], honorific, fullName, parentPrefix, parentName, relationNote };
+        state.arwah[idx] = { ...state.arwah[idx], honorific, fullName, parentPrefix, parentName, relationNote, updatedAtMillis: Date.now() };
       }
       showToast("Data arwah diperbarui.");
     } else {
       state.arwah.unshift({
-        id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        id: crypto.randomUUID(),
+        createdAtMillis: Date.now(),
+        updatedAtMillis: Date.now(),
         honorific,
         fullName,
         parentPrefix,
@@ -881,6 +896,11 @@
     el.tocModal.close();
     renderTahlil();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  window.addEventListener("arwah-cloud-updated", () => {
+    state.arwah = loadArray(STORAGE_KEYS.arwah);
+    if (state.activeTab === "arwah" || state.activeTab === "tahlil") renderActiveTab();
   });
 
   applyTheme();
